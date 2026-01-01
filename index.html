@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="app-icon.png">
+    <title>Global Holidays Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .holiday-card {
+            transition: all 0.3s ease;
+        }
+
+        .holiday-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #3b82f6;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .country-flag {
+            width: 24px;
+            height: 18px;
+            display: inline-block;
+            margin-right: 8px;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-green-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3">
+                <i class=" mr-1 mb-1 fas fa-globe-americas text-blue-500 md:mr-3 md:mb-0"></i>
+                Global Holidays Calendar
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Explore public holidays from around the world.
+                Select any country and year to view their holiday calendar.
+            </p>
+
+            <!-- Country & Year Selectors -->
+            <div class="mt-8 max-w-4xl mx-auto bg-white p-6 rounded-3xl shadow-lg">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Country Selector -->
+                    <div>
+                        <label for="country-select"
+                            class="block text-sm font-medium text-gray-700 sm:text-center pl-3 md:pl-0 text-start mb-2">
+                            <i class="fas fa-flag mr-2"></i>Select Country
+                        </label>
+                        <div class="relative">
+                            <select id="country-select"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none">
+                                <!-- Countries will be populated by JavaScript -->
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <!-- <div class="mt-2 flex items-center">
+                            <div id="country-flag" class="country-flag bg-gray-200"></div>
+                            <span id="country-name" class="text-sm text-gray-600">Select a country</span>
+                        </div> -->
+                    </div>
+
+                    <!-- Year Selector -->
+                    <div>
+                        <label for="year-select"
+                            class="sm:text-center pl-3 md:pl-0 text-start block text-sm font-medium text-gray-700 mb-2 ">
+                            <i class="fas fa-calendar mr-2"></i>Select Year
+                        </label>
+                        <div class="relative">
+                            <select id="year-select"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl  focus:border-blue-500 appearance-none">
+                                <!-- Years will be populated by JavaScript -->
+                            </select>
+                            <div
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <!-- <div class="mt-2 text-sm text-gray-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Data available from 2010 to 2029
+                        </div> -->
+                    </div>
+
+                    <!-- Fetch Button -->
+                    <div class="flex items-end">
+                        <button id="fetch-btn"
+                            class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition duration-300 transform hover:-translate-y-1 shadow-md">
+                            <i class="fas fa-search mr-2"></i> Get Holidays
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Current Selection Display -->
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="flex flex-wrap justify-center items-center gap-4">
+                        <div id="current-country"
+                            class="px-4 py-2 bg-blue-50 rounded-full shadow shadow-blue-200 flex items-center">
+                            <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                            <span class="font-medium">Country: <span class="text-blue-600">Not selected</span></span>
+                        </div>
+                        <div id="current-year"
+                            class="px-4 py-2 shadow shadow-green-200 bg-green-50 rounded-full flex items-center">
+                            <i class="fas fa-calendar-alt text-green-500 mr-2"></i>
+                            <span class="font-medium">Year: <span class="text-green-600">Not selected</span></span>
+                        </div>
+                        <div id="current-holidays"
+                            class="shadow shadow-purple-200 px-4 py-2 bg-purple-50 rounded-full flex items-center">
+                            <i class="fas fa-clock text-purple-500 mr-2"></i>
+                            <span class="font-medium">Total Holidays: <span id="total-holidays"
+                                    class="text-purple-600">0</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <div id="filters-section" class="hidden bg-white p-5 rounded-3xl shadow-lg mb-10 border border-gray-100">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="flex-shrink-0">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <i class="fas fa-sliders-h text-blue-500 mr-2"></i>
+                        Filter Results
+                    </h2>
+                    <p class="text-gray-500 text-sm pr-10">Narrow down the holiday list by month or type</p>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 flex-grow lg:justify-end">
+                    <!-- Month Filter -->
+                    <div class="relative flex-grow sm:flex-grow-0 min-w-[140px]">
+                        <select id="month-filter"
+                            class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                            <option value="all">All Months</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Type Filter -->
+                    <div class="relative flex-grow sm:flex-grow-0 min-w-[160px]">
+                        <select id="type-filter"
+                            class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                            <option value="all">All Types</option>
+                            <option value="National holiday">National Holiday</option>
+                            <option value="Observance">Observance</option>
+                            <option value="Season">Season</option>
+                            <option value="Muslim">Muslim Holiday</option>
+                            <option value="Christian">Christian Holiday</option>
+                        </select>
+                        <div
+                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="relative flex-grow lg:max-w-xs">
+                        <input type="text" id="search-input" placeholder="Search holidays..."
+                            class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                            <i class="fas fa-search text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- Reset Filters -->
+                    <button id="reset-filters"
+                        class="flex-shrink-0 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center border border-gray-300"
+                        title="Reset Filters">
+                        <i class="fas fa-redo-alt text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden text-center py-12">
+            <div class="loading mx-auto"></div>
+            <p class="mt-4 text-gray-600 font-medium">Fetching holiday data from API...</p>
+            <p class="text-sm text-gray-500 mt-2" id="loading-details"></p>
+        </div>
+
+        <!-- Holiday Cards Container -->
+        <div id="holidays-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <!-- Holiday cards will be dynamically inserted here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="no-results" class="hidden text-center py-12">
+            <i class="fas fa-calendar-times text-gray-400 text-6xl mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-700 mb-2">No Holidays Found</h3>
+            <p class="text-gray-600 max-w-md mx-auto">No holidays match your current filter criteria. Try changing your
+                filters or search term.</p>
+        </div>
+
+        <!-- No Data Message (Initial State) -->
+        <div id="no-data" class="text-center py-16">
+            <div
+                class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-6">
+                <i class="fas fa-globe text-3xl text-blue-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-3">Select Country & Year</h3>
+            <p class="text-gray-600 max-w-md mx-auto mb-8">
+                Choose a country and year from the dropdowns above, then click "Get Holidays" to view the holiday
+                calendar.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <div class="animate-pulse-slow">
+                    <i class="fas fa-arrow-up text-2xl text-blue-500"></i>
+                </div>
+                <div class="animate-pulse-slow" style="animation-delay: 0.2s">
+                    <i class="fas fa-hand-point-up text-2xl text-purple-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 pt-8 border-t border-gray-300 text-center">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0 group cursor-default">
+                    <p class="text-gray-600 font-medium flex items-center gap-2 transition-all duration-300">
+                        <span
+                            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 font-semibold group-hover:scale-105 inline-block transition-transform">
+                            Designed & Developed by Talha Javed
+                            <i class="fas ml-1 fa-heart text-red-500 animate-pulse"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="text-gray-600">
+                    <p class="mb-2">
+                        <i class="fas fa-code text-green-500 mr-2"></i>
+                        Built with HTML, Tailwind CSS & JavaScript
+                    </p>
+                    <p>
+                        <i class="fas fa-calendar-check text-purple-500 mr-2"></i>
+                        Last updated: <span id="current-date"></span>
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
