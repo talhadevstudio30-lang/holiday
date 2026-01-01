@@ -52,6 +52,7 @@ let allHolidays = [];
 let filteredHolidays = [];
 let selectedCountry = 'PK';
 let selectedYear = '2026';
+const holidayCache = {}; // Cache for API responses
 
 // DOM Elements
 const countrySelect = document.getElementById('country-select');
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchButton.addEventListener('click', fetchHolidays);
     monthFilter.addEventListener('change', filterHolidays);
     typeFilter.addEventListener('change', filterHolidays);
-    searchInput.addEventListener('input', filterHolidays);
+    searchInput.addEventListener('input', debounce(filterHolidays, 300));
     resetFiltersButton.addEventListener('click', resetFilters);
 
     // Set initial state
@@ -147,6 +148,17 @@ function updateCurrentSelectionDisplay() {
 // Fetch holidays from API
 async function fetchHolidays() {
     try {
+        // Create a cache key
+        const cacheKey = `${selectedCountry}-${selectedYear}`;
+
+        // Check cache first
+        if (holidayCache[cacheKey]) {
+            console.log('Serving from cache:', cacheKey);
+            const data = holidayCache[cacheKey];
+            processHolidayData(data);
+            return;
+        }
+
         // Show loading state
         loadingElement.classList.remove('hidden');
         loadingDetailsElement.textContent = `Fetching holidays for ${countries.find(c => c.code === selectedCountry).name} (${selectedYear})...`;
@@ -164,21 +176,11 @@ async function fetchHolidays() {
 
         const data = await response.json();
         console.log(data);
+
+        // Save to cache
         if (data.response && data.response.holidays) {
-            allHolidays = data.response.holidays;
-            filteredHolidays = [...allHolidays];
-
-            // Update total holidays count
-            totalHolidaysElement.textContent = allHolidays.length;
-
-            // Show filters section
-            filtersSection.classList.remove('hidden');
-
-            // Display holidays
-            displayHolidays(filteredHolidays);
-
-            // Reset filters
-            resetFilters();
+            holidayCache[cacheKey] = data;
+            processHolidayData(data);
         } else {
             throw new Error('No holiday data found for the selected country and year.');
         }
@@ -188,6 +190,25 @@ async function fetchHolidays() {
         displayError(error.message);
     } finally {
         loadingElement.classList.add('hidden');
+    }
+}
+
+function processHolidayData(data) {
+    if (data.response && data.response.holidays) {
+        allHolidays = data.response.holidays;
+        filteredHolidays = [...allHolidays];
+
+        // Update total holidays count
+        totalHolidaysElement.textContent = allHolidays.length;
+
+        // Show filters section
+        filtersSection.classList.remove('hidden');
+
+        // Display holidays
+        displayHolidays(filteredHolidays);
+
+        // Reset filters
+        resetFilters();
     }
 }
 
@@ -207,10 +228,12 @@ function displayHolidays(holidays) {
 
     // Create holiday cards
     holidaysContainer.innerHTML = '';
+    const fragment = document.createDocumentFragment();
     holidays.forEach(holiday => {
         const holidayCard = createHolidayCard(holiday);
-        holidaysContainer.appendChild(holidayCard);
+        fragment.appendChild(holidayCard);
     });
+    holidaysContainer.appendChild(fragment);
 }
 
 // Create a holiday card element
@@ -291,7 +314,7 @@ function createHolidayCard(holiday) {
             <div class="border-t border-gray-200 my-5"></div>
             
             <!-- Footer -->
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="result-card-footer flex justify-between items-start sm:items-center gap-4">
                 <!-- Holiday types -->
                 <div class="flex flex-wrap gap-2">
                     ${holiday.type.map(t => `
@@ -436,4 +459,17 @@ function displayError(message) {
                     </button>
                 </div>
             `;
+}
+
+// Debounce utility function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
