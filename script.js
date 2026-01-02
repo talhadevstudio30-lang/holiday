@@ -45,7 +45,7 @@ const countries = [
 
 // Years range (2010 to 2029)
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 20 }, (_, i) => currentYear - 10 + i);
+const years = Array.from({ length: 15 }, (_, i) => currentYear - 10 + i);
 
 // App state
 let allHolidays = [];
@@ -256,7 +256,7 @@ function createHolidayCard(holiday) {
     const iconClass = getIconByType(holiday.type[0]);
 
     card.innerHTML = `
-    <div class="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div class="relative overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
         <!-- Header with gradient -->
         <div class="${colorClasses.bg} snap-x p-6 scroll-pl-6 scroll-pr-6 relative overflow-auto">
             <!-- Subtle pattern overlay -->
