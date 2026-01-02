@@ -85,6 +85,22 @@
             }
 
         }
+
+        @media (max-width: 1311px) {
+            #holidays-container {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            }
+        }
+
+        @media (max-width: 781px) {
+            #holidays-container {
+                display: grid;
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+
+            }
+        }
     </style>
 </head>
 
@@ -310,7 +326,8 @@
                     </p>
                     <p>
                         <i class="fas fa-calendar-check text-purple-500 mr-2"></i>
-                        Last updated: <span id="current-date"></span>
+                        Last updated: <span id="current-date"></span> <a href="mailto:talhadevstudio30@gmail.com"
+                            class="text-blue-500 hover:text-blue-700 hover:underline">mail</a>
                     </p>
                 </div>
             </div>

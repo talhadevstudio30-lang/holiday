@@ -43,9 +43,9 @@ const countries = [
     { code: 'FI', name: 'Finland', flag: '🇫🇮' }
 ];
 
-// Years range (2010 to 2029)
+// Years range (2006 to 2030)
 const currentYear = new Date().getFullYear();
-const years = Array.from({ length: 15 }, (_, i) => currentYear - 10 + i);
+const years = Array.from({ length: 25 }, (_, i) => currentYear - 20 + i);
 
 // App state
 let allHolidays = [];
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     populateCountries();
     populateYears();
     setDefaultSelections();
-
+    Overlimit();
     // Add event listeners
     countrySelect.addEventListener('change', handleCountryChange);
     yearSelect.addEventListener('change', handleYearChange);
@@ -111,12 +111,24 @@ function populateYears() {
     });
 }
 
+function Overlimit() {
+    if (selectedYear > 2030) {
+        alert(
+            "⚠️ Oops! The current year data is not available yet.\n\n" +
+            "📅 You can still explore data from previous years anytime.\n\n" +
+            "💡 Need access to more years?\n" +
+            "👉 Reach out to us using the Feedback button in the footer.\n\n" +
+            "🙏 Thanks for your patience!"
+        );
+    }
+}
+
 // Set default selections
 function setDefaultSelections() {
     countrySelect.value = 'PK';
-    yearSelect.value = '2026';
+    yearSelect.value = new Date().getFullYear();
     selectedCountry = 'PK';
-    selectedYear = '2026';
+    selectedYear = new Date().getFullYear();
 }
 
 // Handle country change
@@ -175,7 +187,6 @@ async function fetchHolidays() {
         }
 
         const data = await response.json();
-        console.log(data);
 
         // Save to cache
         if (data.response && data.response.holidays) {
