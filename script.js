@@ -71,7 +71,7 @@ const typeFilter = document.getElementById('type-filter');
 const searchInput = document.getElementById('search-input');
 const resetFiltersButton = document.getElementById('reset-filters');
 const loadingDetailsElement = document.getElementById('loading-details');
-
+// current-date
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
     populateCountries();
@@ -121,6 +121,8 @@ function Overlimit() {
             "👉 Reach out to us using the Feedback button in the footer.\n\n" +
             "🙏 Thanks for your patience!"
         );
+        document.getElementById('current-date').textContent = '😬 Oops! over limit';
+
     }
 }
 
