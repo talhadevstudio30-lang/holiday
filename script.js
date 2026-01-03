@@ -270,7 +270,7 @@ function createHolidayCard(holiday) {
     card.innerHTML = `
     <div class="relative overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
         <!-- Header with gradient -->
-        <div class="${colorClasses.bg} snap-x p-6 scroll-pl-6 scroll-pr-6 relative overflow-auto">
+        <div class="${colorClasses.bg} snap-x p-4 md:p-6 scroll-pl-6 scroll-pr-6 relative overflow-auto">
             <!-- Subtle pattern overlay -->
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25px 25px, white 2%, transparent 3%); background-size: 30px 30px;"></div>
