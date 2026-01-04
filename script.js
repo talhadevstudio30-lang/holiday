@@ -114,6 +114,7 @@ function populateYears() {
 // Overlimit function
 function Overlimit() {
     if (selectedYear > 2030) {
+        yearSelect.value = '2030'
         alert(
             "⚠️ Oops! The current year data is not available yet.\n\n" +
             "📅 You can still explore data from previous years anytime.\n\n" +
@@ -121,8 +122,8 @@ function Overlimit() {
             "👉 Reach out to us using the Feedback button in the footer.\n\n" +
             "🙏 Thanks for your patience!"
         );
-        document.getElementById('current-date').textContent = '😬 Oops! over limit';
-
+        document.getElementById('current-date').textContent = 'Oops! Current year is not available';
+        document.getElementById('current-date').style.color = 'red';
     }
 }
 
