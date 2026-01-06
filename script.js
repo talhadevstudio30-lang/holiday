@@ -1,3 +1,6 @@
+// Import configuration
+import config from './config.js';
+
 // Set current date in footer
 document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -5,9 +8,9 @@ document.getElementById('current-date').textContent = new Date().toLocaleDateStr
     day: 'numeric'
 });
 
-// API Configuration
-const API_KEY = 'jjhy20GVzUEwu6Bv488JbksVKYU63XZ9';
-const BASE_URL = 'https://calendarific.com/api/v2';
+// API Configuration - loaded from config
+const API_KEY = config.API_KEY;
+const BASE_URL = config.BASE_URL;
 
 // Country data (some popular countries with ISO codes)
 const countries = [
