@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="app-icon.png">
     <title>Global Holidays Calendar</title>
+    <meta name="cetagory" content="Web App" />
+    <meta property="og:image" content="/app-thumnail.png" />
+    <meta name="description"
+        content="Discover global holidays in a beautiful, interactive calendar experience. Browse country-specific public holidays, filter by month and type, and explore festive occasions from around the world with ease." />
+    <meta name="technologies" content="HTML5, Tailwind CSS, JavaScript, Font Awesome, Google Fonts, REST API" />
+    <meta name="access" content="yes" />
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +19,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     animation: {
@@ -30,6 +37,13 @@
             font-family: 'Poppins', sans-serif;
         }
 
+        .gradient-text {
+            background-image: linear-gradient(90deg, #2563eb 0%, #9333ea 55%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
         .holiday-card {
             transition: all 0.3s ease;
         }
@@ -43,9 +57,9 @@
             display: inline-block;
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255, 255, 255, .3);
+            border: 3px solid rgba(0, 0, 0, .08);
             border-radius: 50%;
-            border-top-color: #3b82f6;
+            border-top-color: #2563eb;
             animation: spin 1s ease-in-out infinite;
         }
 
@@ -76,6 +90,21 @@
             margin-right: 8px;
             border-radius: 2px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Theme toggle segmented control */
+        .theme-seg-btn {
+            transition: all 0.2s ease;
+        }
+
+        .theme-seg-btn.active-light {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .theme-seg-btn.active-dark {
+            background: #1e293b;
+            color: #e2e8f0;
         }
 
         @media only screen and (max-width: 340px) {
@@ -112,35 +141,60 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-br from-blue-50 to-green-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50/40 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 min-h-screen transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- Top bar: logo + theme toggle -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm flex items-center justify-center">
+                <i class="fas fa-earth-americas text-blue-500 text-xl"></i>
+            </div>
+
+            <div class="flex items-center bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full p-1 shadow-sm">
+                <button id="theme-light-btn"
+                    class="theme-seg-btn active-light flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 dark:text-slate-400">
+                    <i class="fas fa-sun text-yellow-400"></i> Light
+                </button>
+                <button id="theme-dark-btn"
+                    class="theme-seg-btn flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium text-gray-500 dark:text-slate-400">
+                    <i class="fas fa-moon"></i> Dark
+                </button>
+            </div>
+        </div>
+
+        <!-- Featured badge -->
+        <div class="flex justify-center mb-6">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-full text-sm font-medium text-blue-600 dark:text-blue-300">
+                <i class="fas fa-star text-blue-400"></i> Featured Project
+            </span>
+        </div>
+
         <!-- Header -->
         <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-3">
-                <i class=" mr-1 mb-1 fas fa-globe-americas text-blue-500 md:mr-3 md:mb-0"></i>
-                Global Holidays Calendar
+            <h1 class="text-4xl md:text-5xl font-bold mb-3">
+                <span class="mr-2">🌎</span><span class="gradient-text">Global Holidays Calendar</span>
             </h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Explore public holidays from around the world.
+            <p class="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
+                Explore public holidays from around the world.<br class="hidden sm:block">
                 Select any country and year to view their holiday calendar.
             </p>
 
             <!-- Country & Year Selectors -->
-            <div class="mt-8 max-w-4xl mx-auto bg-white p-6 rounded-3xl shadow-lg">
+            <div class="mt-8 max-w-4xl mx-auto bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-lg border border-gray-100 dark:border-slate-700">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Country Selector -->
                     <div>
                         <label for="country-select"
-                            class="block text-sm font-medium text-gray-700 sm:text-center pl-3 md:pl-0 text-start mb-2">
-                            <i class="fas fa-flag mr-2"></i>Select Country
+                            class="block text-sm font-medium text-gray-700 dark:text-slate-300 sm:text-center pl-3 md:pl-0 text-start mb-2">
+                            <i class="fas fa-flag mr-2 text-gray-400"></i>Select Country
                         </label>
                         <div class="relative">
                             <select id="country-select"
-                                class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none">
+                                class="w-full bg-gray-50 dark:bg-slate-900 dark:text-slate-100 border border-gray-300 dark:border-slate-600 text-gray-700 py-3 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none">
                                 <!-- Countries will be populated by JavaScript -->
                             </select>
                             <div
-                                class="pointer-events-none px-3.5 absolute inset-y-0 right-0 flex items-center text-gray-700">
+                                class="pointer-events-none px-3.5 absolute inset-y-0 right-0 flex items-center text-gray-700 dark:text-slate-400">
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                         </div>
@@ -149,16 +203,16 @@
                     <!-- Year Selector -->
                     <div>
                         <label for="year-select"
-                            class="sm:text-center pl-3 md:pl-0 text-start block text-sm font-medium text-gray-700 mb-2 ">
-                            <i class="fas fa-calendar mr-2"></i>Select Year
+                            class="sm:text-center pl-3 md:pl-0 text-start block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2 ">
+                            <i class="fas fa-calendar mr-2 text-gray-400"></i>Select Year
                         </label>
                         <div class="relative">
                             <select id="year-select"
-                                class="w-full bg-gray-50 border border-gray-300 text-gray-700 py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl  focus:border-blue-500 appearance-none">
+                                class="w-full bg-gray-50 dark:bg-slate-900 dark:text-slate-100 border border-gray-300 dark:border-slate-600 text-gray-700 py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl  focus:border-blue-500 appearance-none">
                                 <!-- Years will be populated by JavaScript -->
                             </select>
                             <div
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-700">
+                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-gray-700 dark:text-slate-400">
                                 <i class="fas fa-chevron-down"></i>
                             </div>
                         </div>
@@ -174,45 +228,77 @@
                 </div>
 
                 <!-- Current Selection Display -->
-                <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-slate-700">
                     <div class="flex flex-wrap justify-center items-center gap-4">
                         <div id="current-country"
-                            class="px-4 py-2 bg-blue-50 rounded-full shadow shadow-blue-200 flex items-center">
+                            class="px-4 py-2 bg-blue-50 dark:bg-slate-900 rounded-full shadow shadow-blue-200 dark:shadow-none flex items-center">
                             <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
-                            <span class="font-medium">Country: <span class="text-blue-600">Not selected</span></span>
+                            <span class="font-medium dark:text-slate-200">Country: <span class="text-blue-600 dark:text-blue-400">Not selected</span></span>
                         </div>
                         <div id="current-year"
-                            class="px-4 py-2 shadow shadow-green-200 bg-green-50 rounded-full flex items-center">
+                            class="px-4 py-2 shadow shadow-green-200 dark:shadow-none bg-green-50 dark:bg-slate-900 rounded-full flex items-center">
                             <i class="fas fa-calendar-alt text-green-500 mr-2"></i>
-                            <span class="font-medium">Year: <span class="text-green-600">Not selected</span></span>
+                            <span class="font-medium dark:text-slate-200">Year: <span class="text-green-600 dark:text-green-400">Not selected</span></span>
                         </div>
                         <div id="current-holidays"
-                            class="shadow shadow-purple-200 px-4 py-2 bg-purple-50 rounded-full flex items-center">
+                            class="shadow shadow-purple-200 dark:shadow-none px-4 py-2 bg-purple-50 dark:bg-slate-900 rounded-full flex items-center">
                             <i class="fas fa-clock text-purple-500 mr-2"></i>
-                            <span class="font-medium">Total Holidays: <span id="total-holidays"
-                                    class="text-purple-600">0</span></span>
+                            <span class="font-medium dark:text-slate-200">Total Holidays: <span id="total-holidays"
+                                    class="text-purple-600 dark:text-purple-400">0</span></span>
                         </div>
                     </div>
                 </div>
             </div>
         </header>
 
+        <!-- Feature highlights -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-14 text-center">
+            <div>
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-50 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fas fa-globe text-2xl text-blue-500"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 dark:text-slate-100 mb-1">Worldwide Coverage</h3>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Holidays from 100+ countries</p>
+            </div>
+            <div>
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-teal-50 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fas fa-calendar-days text-2xl text-teal-500"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 dark:text-slate-100 mb-1">Year-wise Data</h3>
+                <p class="text-sm text-gray-500 dark:text-slate-400">View holidays for any year</p>
+            </div>
+            <div>
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-orange-50 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fas fa-bolt text-2xl text-orange-400"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 dark:text-slate-100 mb-1">Real-time Info</h3>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Accurate and up-to-date data</p>
+            </div>
+            <div>
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-50 dark:bg-slate-800 flex items-center justify-center">
+                    <i class="fas fa-mobile-screen-button text-2xl text-purple-500"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 dark:text-slate-100 mb-1">Responsive Design</h3>
+                <p class="text-sm text-gray-500 dark:text-slate-400">Works perfectly on all devices</p>
+            </div>
+        </div>
+
         <!-- Filters -->
-        <div id="filters-section" class="hidden bg-white p-5 rounded-3xl shadow-lg mb-10 border border-gray-100">
+        <div id="filters-section" class="hidden bg-white dark:bg-slate-800 p-5 rounded-3xl shadow-lg mb-10 border border-gray-100 dark:border-slate-700">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div class="flex-shrink-0">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-slate-100 flex items-center">
                         <i class="fas fa-sliders-h text-blue-500 mr-2"></i>
                         Filter Results
                     </h2>
-                    <p class="text-gray-500 text-sm pr-10">Narrow down the holiday list by month or type</p>
+                    <p class="text-gray-500 dark:text-slate-400 text-sm pr-10">Narrow down the holiday list by month or type</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3 flex-grow lg:justify-end">
                     <!-- Month Filter -->
                     <div class="relative flex-grow sm:flex-grow-0 min-w-[140px]">
                         <select id="month-filter"
-                            class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                            class="w-full appearance-none bg-gray-50 dark:bg-slate-900 dark:text-slate-100 border border-gray-200 dark:border-slate-600 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
                             <option value="all">All Months</option>
                             <option value="1">January</option>
                             <option value="2">February</option>
@@ -236,7 +322,7 @@
                     <!-- Type Filter -->
                     <div class="relative flex-grow sm:flex-grow-0 min-w-[160px]">
                         <select id="type-filter"
-                            class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                            class="w-full appearance-none bg-gray-50 dark:bg-slate-900 dark:text-slate-100 border border-gray-200 dark:border-slate-600 text-gray-700 py-2.5 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
                             <option value="all">All Types</option>
                             <option value="National holiday">National Holiday</option>
                             <option value="Observance">Observance</option>
@@ -253,7 +339,7 @@
                     <!-- Search -->
                     <div class="relative flex-grow lg:max-w-xs">
                         <input type="text" id="search-input" placeholder="Search holidays..."
-                            class="w-full bg-gray-50 border border-gray-200 text-gray-700 py-2.5 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                            class="w-full bg-gray-50 dark:bg-slate-900 dark:text-slate-100 border border-gray-200 dark:border-slate-600 text-gray-700 py-2.5 pl-10 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                             <i class="fas fa-search text-sm"></i>
                         </div>
@@ -261,7 +347,7 @@
 
                     <!-- Reset Filters -->
                     <button id="reset-filters"
-                        class="flex-shrink-0 px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center border border-gray-300"
+                        class="flex-shrink-0 px-4 py-3 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center border border-gray-300 dark:border-slate-600"
                         title="Reset Filters">
                         <i class="fas fa-redo-alt text-sm"></i>
                     </button>
@@ -272,11 +358,11 @@
         <!-- Loading Indicator -->
         <div id="loading" class="hidden text-center py-12">
             <div class="loading mx-auto"></div>
-            <p class="mt-4 text-gray-600 font-medium">
-                🎉 Hang tight! We’re grabbing the latest holiday details for you…
+            <p class="mt-4 text-gray-600 dark:text-slate-400 font-medium">
+                🎉 Hang tight! We're grabbing the latest holiday details for you…
             </p>
 
-            <p class="text-sm text-gray-500 mt-2" id="loading-details"></p>
+            <p class="text-sm text-gray-500 dark:text-slate-500 mt-2" id="loading-details"></p>
         </div>
 
         <!-- Holiday Cards Container -->
@@ -286,9 +372,9 @@
 
         <!-- No Results Message -->
         <div id="no-results" class="hidden text-center py-12">
-            <i class="fas fa-calendar-times text-gray-400 text-6xl mb-4"></i>
-            <h3 class="text-2xl font-bold text-gray-700 mb-2">No Holidays Found</h3>
-            <p class="text-gray-600 max-w-md mx-auto">
+            <i class="fas fa-calendar-times text-gray-400 dark:text-slate-600 text-6xl mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-700 dark:text-slate-200 mb-2">No Holidays Found</h3>
+            <p class="text-gray-600 dark:text-slate-400 max-w-md mx-auto">
                 😕 No holidays found with these filters. Try tweaking them or search something else!
             </p>
 
@@ -297,11 +383,11 @@
         <!-- No Data Message (Initial State) -->
         <div id="no-data" class="text-center py-16">
             <div
-                class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-6">
+                class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-slate-800 dark:to-slate-800 rounded-full mb-6">
                 <i class="fas fa-globe text-3xl text-blue-500"></i>
             </div>
-            <h3 class="text-2xl font-bold text-gray-800 mb-3">Select Country & Year</h3>
-            <p class="text-gray-600 max-w-md mx-auto mb-8">
+            <h3 class="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-3">Select Country & Year</h3>
+            <p class="text-gray-600 dark:text-slate-400 max-w-md mx-auto mb-8">
                 Choose a country and year from the dropdowns above, then click "Get Holidays" to view the holiday
                 calendar.
             </p>
@@ -316,10 +402,10 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-12 pt-8 border-t border-gray-300 text-center">
+        <footer class="mt-12 pt-8 border-t border-gray-300 dark:border-slate-700 text-center">
             <div class="flex flex-col md:flex-row justify-between items-center">
                 <div class="mb-4 md:mb-0 group cursor-default">
-                    <p class="text-gray-600 font-medium flex items-center gap-2 transition-all duration-300">
+                    <p class="text-gray-600 dark:text-slate-400 font-medium flex items-center gap-2 transition-all duration-300">
                         <span
                             class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 font-semibold inline-block transition-transform duration-200 xl:text-[19px]">
                             Designed & Developed by Talha Javed
@@ -327,24 +413,24 @@
                         </span><br>
                     <p class="mt-2">
                         <a href="mailto:talhadevstudio30@gmail.com"
-                            class="inline-flex items-center px-4 xl:py-2 py-1.5 bg-blue-50 border-2 rounded-xl text-sm xl:text-[17px] font-medium text-blue-600 border-blue-200 transform scale-100 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow group">
+                            class="inline-flex items-center px-4 xl:py-2 py-1.5 bg-blue-50 dark:bg-slate-800 border-2 rounded-xl text-sm xl:text-[17px] font-medium text-blue-600 dark:text-blue-400 border-blue-200 dark:border-slate-700 transform scale-100 hover:scale-105 transition-all duration-200 shadow-sm hover:shadow group">
                             <i class="fas fa-comment-dots mr-2 text-blue-500 transition-colors"></i>
                             Feedback
                         </a>
                     </p>
                 </div>
-                <div class="text-gray-600">
+                <div class="text-gray-600 dark:text-slate-400">
                     <div class="flex flex-wrap justify-center md:justify-end gap-2 mb-3">
                         <span
-                            class="inline-flex xl:text-[14px] shadow-sm shadow-orange-200 items-center px-2.5 py-1 rounded-lg text-[10px] duration-200 sm:text-xs uppercase tracking-wider bg-orange-100 text-orange-500 border font-semibold border-orange-200 transform scale-100 hover:scale-105">
+                            class="inline-flex xl:text-[14px] shadow-sm shadow-orange-200 dark:shadow-none items-center px-2.5 py-1 rounded-lg text-[10px] duration-200 sm:text-xs uppercase tracking-wider bg-orange-100 dark:bg-slate-800 text-orange-500 dark:text-orange-400 border font-semibold border-orange-200 dark:border-slate-700 transform scale-100 hover:scale-105">
                             <i class="fab fa-html5 xl:text-[16px] mr-1.5 text-[13px] sm:text-sm"></i> HTML5
                         </span>
                         <span
-                            class="inline-flex transform scale-100 hover:scale-105 shadow-sm shadow-blue-200 items-center xl:text-[14px] px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider bg-blue-100 text-blue-500 border text-[10px] duration-200 sm:text-xs border-blue-200">
+                            class="inline-flex transform scale-100 hover:scale-105 shadow-sm shadow-blue-200 dark:shadow-none items-center xl:text-[14px] px-2.5 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider bg-blue-100 dark:bg-slate-800 text-blue-500 dark:text-blue-400 border text-[10px] duration-200 sm:text-xs border-blue-200 dark:border-slate-700">
                             <i class="fas xl:text-[16px] fa-wind text-[13px] sm:text-sm mr-1.5"></i> Tailwind
                         </span>
                         <span
-                            class=" transform scale-100 hover:scale-105 inline-flex items-center text-xs px-2.5 py-1 rounded-lg font-semibold uppercase duration-200 text-[10px] sm:text-xs xl:text-[14px] tracking-wider bg-yellow-100 text-yellow-500 shadow-sm shadow-yellow-200 border border-yellow-200">
+                            class=" transform scale-100 hover:scale-105 inline-flex items-center text-xs px-2.5 py-1 rounded-lg font-semibold uppercase duration-200 text-[10px] sm:text-xs xl:text-[14px] tracking-wider bg-yellow-100 dark:bg-slate-800 text-yellow-500 dark:text-yellow-400 shadow-sm shadow-yellow-200 dark:shadow-none border border-yellow-200 dark:border-slate-700">
                             <i
                                 class="fab text-[13px] sm:text-sm fa-js-square text-yellow-500 mr-1.5 xl:text-[16px]"></i>
                             JavaScript
@@ -359,6 +445,34 @@
     </div>
     </footer>
     </div>
+
+    <!-- Theme toggle logic -->
+    <script>
+        const root = document.documentElement;
+        const lightBtn = document.getElementById('theme-light-btn');
+        const darkBtn = document.getElementById('theme-dark-btn');
+
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                root.classList.add('dark');
+                darkBtn.classList.add('active-dark');
+                lightBtn.classList.remove('active-light');
+            } else {
+                root.classList.remove('dark');
+                lightBtn.classList.add('active-light');
+                darkBtn.classList.remove('active-dark');
+            }
+        }
+
+        lightBtn.addEventListener('click', () => setTheme('light'));
+        darkBtn.addEventListener('click', () => setTheme('dark'));
+
+        // Respect system preference on first load (no persistence, per-session only)
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        }
+    </script>
+
     <!-- Load local configuration first -->
     <script src="config-local.js"></script>
     <!-- Load main script as a module -->

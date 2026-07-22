@@ -261,10 +261,10 @@ function handleYearChange() {
 function updateCurrentSelectionDisplay() {
     const country = countries.find(c => c.code === selectedCountry);
     currentCountryElement.innerHTML = `<i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
-                <span class="font-medium">Country: <span class="text-blue-600">${country ? country.flag + ' ' + country.name : selectedCountry}</span></span>`;
+                <span class="font-medium dark:text-slate-200">Country: <span class="text-blue-600 dark:text-blue-400">${country ? country.flag + ' ' + country.name : selectedCountry}</span></span>`;
 
     currentYearElement.innerHTML = `<i class="fas fa-calendar-alt text-green-500 mr-2"></i>
-                <span class="font-medium">Year: <span class="text-green-600">${selectedYear}</span></span>`;
+                <span class="font-medium dark:text-slate-200">Year: <span class="text-green-600 dark:text-green-400">${selectedYear}</span></span>`;
 }
 
 // Fetch holidays from API
@@ -377,7 +377,7 @@ function createHolidayCard(holiday) {
     const iconClass = getIconByType(holiday.type[0]);
 
     card.innerHTML = `
-    <div class="relative overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <div class="holiday-card relative overflow-hidden rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300">
         <!-- Header with gradient -->
         <div class="${colorClasses.bg} snap-x p-4 md:p-6 scroll-pl-6 scroll-pr-6 relative overflow-auto">
             <!-- Subtle pattern overlay -->
@@ -410,37 +410,37 @@ function createHolidayCard(holiday) {
         </div>
         
         <!-- Content section -->
-        <div class="bg-white p-5">
+        <div class="bg-white dark:bg-slate-800 p-5">
             <!-- Date (desktop visible) -->
-            <div class="hidden md:flex items-center text-gray-700 mb-5 px-4 py-3 bg-gray-100 rounded-xl">
+            <div class="hidden md:flex items-center text-gray-700 dark:text-slate-300 mb-5 px-4 py-3 bg-gray-100 dark:bg-slate-900 rounded-xl">
                 <i class="fas fa-calendar-day mr-3 text-blue-500 text-lg"></i>
                 <div>
-                    <span class="font-semibold text-gray-900">${formattedDate}</span>
-                    <span class="text-gray-500 text-sm ml-2">• ${date.toLocaleDateString('en-US', { weekday: 'long' })}</span>
+                    <span class="font-semibold text-gray-900 dark:text-slate-100">${formattedDate}</span>
+                    <span class="text-gray-500 dark:text-slate-400 text-sm ml-2">• ${date.toLocaleDateString('en-US', { weekday: 'long' })}</span>
                 </div>
             </div>
             
             <!-- Description -->
             <div class="mb-6">
-                <div class="flex items-start text-gray-700">
+                <div class="flex items-start text-gray-700 dark:text-slate-300">
                     <i class="fas fa-info-circle mr-3 text-green-500 mt-1 text-lg"></i>
                     <div>
-                        <h4 class="font-semibold text-gray-900 mb-1">Description</h4>
-                        <p class="text-gray-600 text-sm leading-relaxed">${holiday.description || 'No description available'}</p>
+                        <h4 class="font-semibold text-gray-900 dark:text-slate-100 mb-1">Description</h4>
+                        <p class="text-gray-600 dark:text-slate-400 text-sm leading-relaxed">${holiday.description || 'No description available'}</p>
                     </div>
                 </div>
             </div>
             
             <!-- Divider -->
-            <div class="border-t border-gray-200 my-5"></div>
+            <div class="border-t border-gray-200 dark:border-slate-700 my-5"></div>
             
             <!-- Footer -->
             <div class="result-card-footer flex justify-between items-start sm:items-center gap-4">
                 <!-- Holiday types -->
                 <div class="flex flex-wrap gap-2">
                     ${holiday.type.map(t => `
-                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            <i class="fas fa-tag mr-1.5 text-xs text-gray-500"></i>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-900 text-gray-800 dark:text-slate-300">
+                            <i class="fas fa-tag mr-1.5 text-xs text-gray-500 dark:text-slate-500"></i>
                             ${t}
                         </span>
                     `).join('')}
@@ -452,7 +452,7 @@ function createHolidayCard(holiday) {
                         <div class="text-sm font-semibold ${colorClasses.text}">
                             ${date.toLocaleDateString('en-US', { month: 'long' })}
                         </div>
-                        <div class="text-xs text-gray-500">${date.getDate()} ${date.toLocaleDateString('en-US', { day: 'numeric' }) === '1' ? 'st' : date.toLocaleDateString('en-US', { day: 'numeric' }) === '2' ? 'nd' : date.toLocaleDateString('en-US', { day: 'numeric' }) === '3' ? 'rd' : 'th'}</div>
+                        <div class="text-xs text-gray-500 dark:text-slate-500">${date.getDate()} ${date.toLocaleDateString('en-US', { day: 'numeric' }) === '1' ? 'st' : date.toLocaleDateString('en-US', { day: 'numeric' }) === '2' ? 'nd' : date.toLocaleDateString('en-US', { day: 'numeric' }) === '3' ? 'rd' : 'th'}</div>
                     </div>
                     <div class="w-12 h-12 rounded-full ${colorClasses.bgLight} flex items-center justify-center">
                         <i class="fas fa-calendar ${colorClasses.text} text-lg"></i>
@@ -462,11 +462,11 @@ function createHolidayCard(holiday) {
             
             <!-- Progress indicator for month -->
             <div class="mt-5">
-                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <div class="flex justify-between text-xs text-gray-500 dark:text-slate-500 mb-1">
                     <span>Month Progress</span>
                     <span>${Math.round((date.getDate() / new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()) * 100)}%</span>
                 </div>
-                <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
                     <div class="h-full ${colorClasses.bg}" style="width: ${(date.getDate() / new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()) * 100}%"></div>
                 </div>
             </div>
@@ -570,11 +570,11 @@ function displayError(message) {
     filtersSection.classList.add('hidden');
     holidaysContainer.innerHTML = `
                 <div class="col-span-full text-center py-12">
-                    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-slate-800 rounded-full mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 text-2xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Error Loading Data</h3>
-                    <p class="text-gray-600 max-w-md mx-auto mb-6">${message}</p>
+                    <h3 class="text-2xl font-bold text-gray-800 dark:text-slate-100 mb-2">Error Loading Data</h3>
+                    <p class="text-gray-600 dark:text-slate-400 max-w-md mx-auto mb-6">${message}</p>
                     <button onclick="fetchHolidays()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition duration-300 transform hover:-translate-y-1 shadow-md">
                         <i class="fas fa-redo mr-2"></i> Try Again
                     </button>
